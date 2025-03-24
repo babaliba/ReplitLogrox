@@ -1,14 +1,18 @@
 
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
-const db = new sqlite3.Database('users.db');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL
+});
 
+// Enable JSON parsing for the preferences update
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
   secret: 'your-secret-key',
@@ -17,12 +21,14 @@ app.use(session({
 }));
 
 // Create users table
-db.run(`CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT UNIQUE,
-  password TEXT,
-  preferences TEXT
-)`);
+pool.query(`
+  CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username TEXT UNIQUE,
+    password TEXT,
+    preferences TEXT
+  )
+`);
 
 app.get('/', (req, res) => {
   if (req.session.user) {
@@ -32,33 +38,40 @@ app.get('/', (req, res) => {
   }
 });
 
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
   const { username, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
   
-  db.run('INSERT INTO users (username, password) VALUES (?, ?)', 
-    [username, hashedPassword], 
-    (err) => {
-      if (err) {
-        res.status(400).send('Username already exists');
-      } else {
-        res.redirect('/');
-      }
-    }
-  );
+  try {
+    await pool.query(
+      'INSERT INTO users (username, password) VALUES ($1, $2)',
+      [username, hashedPassword]
+    );
+    res.redirect('/');
+  } catch (err) {
+    res.status(400).send('Username already exists');
+  }
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   
-  db.get('SELECT * FROM users WHERE username = ?', [username], (err, user) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM users WHERE username = $1',
+      [username]
+    );
+    const user = result.rows[0];
+    
     if (user && bcrypt.compareSync(password, user.password)) {
       req.session.user = username;
       res.redirect('/');
     } else {
       res.status(400).send('Invalid credentials');
     }
-  });
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
 });
 
 app.get('/logout', (req, res) => {
@@ -66,35 +79,34 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-// Database management routes
-app.get('/db/users', (req, res) => {
+app.get('/db/users', async (req, res) => {
   if (!req.session.user) {
     return res.status(401).send('Unauthorized');
   }
-  db.all('SELECT id, username, preferences FROM users', [], (err, rows) => {
-    if (err) {
-      res.status(500).send(err.message);
-    } else {
-      res.json(rows);
-    }
-  });
+  try {
+    const result = await pool.query(
+      'SELECT id, username, preferences FROM users'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
-app.post('/db/users/:id', (req, res) => {
+app.post('/db/users/:id', async (req, res) => {
   if (!req.session.user) {
     return res.status(401).send('Unauthorized');
   }
   const { preferences } = req.body;
-  db.run('UPDATE users SET preferences = ? WHERE id = ?', 
-    [preferences, req.params.id],
-    (err) => {
-      if (err) {
-        res.status(500).send(err.message);
-      } else {
-        res.send('Updated successfully');
-      }
-    }
-  );
+  try {
+    await pool.query(
+      'UPDATE users SET preferences = $1 WHERE id = $2',
+      [preferences, req.params.id]
+    );
+    res.send('Updated successfully');
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 app.listen(3000, '0.0.0.0', () => {
