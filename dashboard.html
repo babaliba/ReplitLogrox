@@ -11,6 +11,29 @@
 <body>
   <h2>Welcome to your Dashboard</h2>
   <a href="/logout" class="logout">Logout</a>
-  <p>This is your personalized content.</p>
+  <div id="users"></div>
+  <script>
+    fetch('/db/users')
+      .then(res => res.json())
+      .then(users => {
+        const usersHtml = users.map(user => `
+          <div style="margin: 10px 0; padding: 10px; border: 1px solid #ccc;">
+            <p>Username: ${user.username}</p>
+            <textarea id="pref_${user.id}" style="width: 100%; margin: 5px 0;">${user.preferences || ''}</textarea>
+            <button onclick="updateUser(${user.id})">Update Preferences</button>
+          </div>
+        `).join('');
+        document.getElementById('users').innerHTML = usersHtml;
+      });
+
+    function updateUser(id) {
+      const preferences = document.getElementById(`pref_${id}`).value;
+      fetch(`/db/users/${id}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ preferences })
+      }).then(() => alert('Updated successfully'));
+    }
+  </script>
 </body>
 </html>

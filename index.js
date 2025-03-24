@@ -66,6 +66,37 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
+// Database management routes
+app.get('/db/users', (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send('Unauthorized');
+  }
+  db.all('SELECT id, username, preferences FROM users', [], (err, rows) => {
+    if (err) {
+      res.status(500).send(err.message);
+    } else {
+      res.json(rows);
+    }
+  });
+});
+
+app.post('/db/users/:id', (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send('Unauthorized');
+  }
+  const { preferences } = req.body;
+  db.run('UPDATE users SET preferences = ? WHERE id = ?', 
+    [preferences, req.params.id],
+    (err) => {
+      if (err) {
+        res.status(500).send(err.message);
+      } else {
+        res.send('Updated successfully');
+      }
+    }
+  );
+});
+
 app.listen(3000, '0.0.0.0', () => {
   console.log('Server running on port 3000');
 });
