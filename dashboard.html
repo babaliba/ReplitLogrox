@@ -115,6 +115,7 @@
         document.getElementById('rol').value = empleado.rol;
         document.getElementById('activo').checked = empleado.activo;
         document.getElementById('empleadoForm').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
       async function guardarEmpleado(event) {
