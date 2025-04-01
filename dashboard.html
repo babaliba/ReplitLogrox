@@ -73,12 +73,14 @@
 
       function showEmpleadoForm() {
         document.getElementById('empleadoForm').style.display = 'block';
+        document.getElementById('empleadosGrid').style.display = 'none';
         document.getElementById('formEmpleado').reset();
         document.getElementById('empleadoId').value = '';
       }
 
       function cancelarEdicion() {
         document.getElementById('empleadoForm').style.display = 'none';
+        document.getElementById('empleadosGrid').style.display = 'grid';
       }
 
       function cargarEmpleados() {
@@ -139,6 +141,7 @@
             body: JSON.stringify(empleado)
           });
           document.getElementById('empleadoForm').style.display = 'none';
+          document.getElementById('empleadosGrid').style.display = 'grid';
           cargarEmpleados();
         } catch (error) {
           alert('Error al guardar el empleado');
