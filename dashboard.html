@@ -15,12 +15,151 @@
     <div class="menu">
       <button onclick="showSection('users')" class="active">Usuarios</button>
       <button onclick="showSection('datos')">Datos</button>
+      <button onclick="showSection('empleados')">Empleados</button>
     </div>
 
     <div id="users" class="section active"></div>
     <div id="datos" class="section">
       <h3>Sección para editar los datos de la campaña</h3>
     </div>
+    <div id="empleados" class="section">
+      <h3>Gestión de Empleados</h3>
+      <button onclick="showEmpleadoForm()">Nuevo Empleado</button>
+      <div id="empleadoForm" style="display: none;">
+        <h4>Formulario de Empleado</h4>
+        <form id="formEmpleado" onsubmit="guardarEmpleado(event)">
+          <input type="hidden" id="empleadoId">
+          <div class="form-group">
+            <label>Nombre:</label>
+            <input type="text" id="nombre" required>
+          </div>
+          <div class="form-group">
+            <label>Apellidos:</label>
+            <input type="text" id="apellidos" required>
+          </div>
+          <div class="form-group">
+            <label>Alias:</label>
+            <input type="text" id="alias" required>
+          </div>
+          <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="email" required>
+          </div>
+          <div class="form-group">
+            <label>Teléfono:</label>
+            <input type="tel" id="telefono" required>
+          </div>
+          <div class="form-group">
+            <label>Departamento:</label>
+            <input type="text" id="departamento" required>
+          </div>
+          <div class="form-group">
+            <label>Rol:</label>
+            <input type="text" id="rol" required>
+          </div>
+          <div class="form-group">
+            <label>Activo:</label>
+            <input type="checkbox" id="activo">
+          </div>
+          <button type="submit">Guardar</button>
+          <button type="button" onclick="cancelarEdicion()">Cancelar</button>
+        </form>
+      </div>
+      <div id="empleadosGrid"></div>
+    </div>
+
+    <script>
+      // ... código existente ...
+
+      function showEmpleadoForm() {
+        document.getElementById('empleadoForm').style.display = 'block';
+        document.getElementById('formEmpleado').reset();
+        document.getElementById('empleadoId').value = '';
+      }
+
+      function cancelarEdicion() {
+        document.getElementById('empleadoForm').style.display = 'none';
+      }
+
+      function cargarEmpleados() {
+        fetch('/api/empleados')
+          .then(res => res.json())
+          .then(empleados => {
+            const html = empleados.map(emp => `
+              <div class="empleado-card">
+                <h4>${emp.nombre} ${emp.apellidos}</h4>
+                <p>Alias: ${emp.alias}</p>
+                <p>Email: ${emp.email}</p>
+                <p>Teléfono: ${emp.telefono}</p>
+                <p>Departamento: ${emp.departamento}</p>
+                <p>Rol: ${emp.rol}</p>
+                <p>Estado: ${emp.activo ? 'Activo' : 'Inactivo'}</p>
+                <button onclick="editarEmpleado(${JSON.stringify(emp)})">Editar</button>
+                <button onclick="eliminarEmpleado(${emp.id})">Eliminar</button>
+              </div>
+            `).join('');
+            document.getElementById('empleadosGrid').innerHTML = html;
+          });
+      }
+
+      function editarEmpleado(empleado) {
+        document.getElementById('empleadoId').value = empleado.id;
+        document.getElementById('nombre').value = empleado.nombre;
+        document.getElementById('apellidos').value = empleado.apellidos;
+        document.getElementById('alias').value = empleado.alias;
+        document.getElementById('email').value = empleado.email;
+        document.getElementById('telefono').value = empleado.telefono;
+        document.getElementById('departamento').value = empleado.departamento;
+        document.getElementById('rol').value = empleado.rol;
+        document.getElementById('activo').checked = empleado.activo;
+        document.getElementById('empleadoForm').style.display = 'block';
+      }
+
+      async function guardarEmpleado(event) {
+        event.preventDefault();
+        const empleadoId = document.getElementById('empleadoId').value;
+        const empleado = {
+          nombre: document.getElementById('nombre').value,
+          apellidos: document.getElementById('apellidos').value,
+          alias: document.getElementById('alias').value,
+          email: document.getElementById('email').value,
+          telefono: document.getElementById('telefono').value,
+          departamento: document.getElementById('departamento').value,
+          rol: document.getElementById('rol').value,
+          activo: document.getElementById('activo').checked
+        };
+
+        const url = empleadoId ? `/api/empleados/${empleadoId}` : '/api/empleados';
+        const method = empleadoId ? 'PUT' : 'POST';
+
+        try {
+          await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(empleado)
+          });
+          document.getElementById('empleadoForm').style.display = 'none';
+          cargarEmpleados();
+        } catch (error) {
+          alert('Error al guardar el empleado');
+        }
+      }
+
+      async function eliminarEmpleado(id) {
+        if (confirm('¿Está seguro de que desea eliminar este empleado?')) {
+          try {
+            await fetch(`/api/empleados/${id}`, { method: 'DELETE' });
+            cargarEmpleados();
+          } catch (error) {
+            alert('Error al eliminar el empleado');
+          }
+        }
+      }
+
+      // Cargar empleados cuando se muestre la sección
+      document.querySelector('button[onclick="showSection(\'empleados\')"]')
+        .addEventListener('click', cargarEmpleados);
+    </script>
   </div>
 
   <script>

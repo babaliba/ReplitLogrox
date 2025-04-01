@@ -113,6 +113,63 @@ app.post("/db/users/:id", async (req, res) => {
   }
 });
 
+// Rutas para empleados
+app.get("/api/empleados", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send("No autorizado");
+  }
+  try {
+    const result = await pool.query("SELECT * FROM empleados ORDER BY id");
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.post("/api/empleados", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send("No autorizado");
+  }
+  const { nombre, apellidos, alias, email, telefono, departamento, rol, activo } = req.body;
+  try {
+    const result = await pool.query(
+      "INSERT INTO empleados (nombre, apellidos, alias, email, telefono, departamento, rol, activo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+      [nombre, apellidos, alias, email, telefono, departamento, rol, activo]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.put("/api/empleados/:id", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send("No autorizado");
+  }
+  const { nombre, apellidos, alias, email, telefono, departamento, rol, activo } = req.body;
+  try {
+    const result = await pool.query(
+      "UPDATE empleados SET nombre=$1, apellidos=$2, alias=$3, email=$4, telefono=$5, departamento=$6, rol=$7, activo=$8 WHERE id=$9 RETURNING *",
+      [nombre, apellidos, alias, email, telefono, departamento, rol, activo, req.params.id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.delete("/api/empleados/:id", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send("No autorizado");
+  }
+  try {
+    await pool.query("DELETE FROM empleados WHERE id=$1", [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 // Bind the server to port 5000 on all interfaces
 const port = process.env.PORT || 5000;
 app.listen(port, "0.0.0.0", () => {
