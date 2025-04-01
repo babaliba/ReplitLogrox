@@ -7,7 +7,7 @@ const path = require("path");
 
 const app = express();
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@noisy-fog-06453742.proxy.replit.db:5432/postgres',
 });
 
 // Enable JSON parsing for the preferences update
