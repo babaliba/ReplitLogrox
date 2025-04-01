@@ -94,7 +94,7 @@
                 <p>Departamento: ${emp.departamento}</p>
                 <p>Rol: ${emp.rol}</p>
                 <p>Estado: ${emp.activo ? 'Activo' : 'Inactivo'}</p>
-                <button onclick="editarEmpleado(${JSON.stringify(emp)})">Editar</button>
+                <button onclick='editarEmpleado(${JSON.stringify(emp).replace(/'/g, "&#39;")})'>Editar</button>
                 <button onclick="eliminarEmpleado(${emp.id})">Eliminar</button>
               </div>
             `).join('');
