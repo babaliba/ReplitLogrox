@@ -1,24 +1,25 @@
-
-const express = require('express');
-const { Pool } = require('pg');
-const bcrypt = require('bcryptjs');
-const session = require('express-session');
-const bodyParser = require('body-parser');
-const path = require('path');
+const express = require("express");
+const { Pool } = require("pg");
+const bcrypt = require("bcryptjs");
+const session = require("express-session");
+const bodyParser = require("body-parser");
+const path = require("path");
 
 const app = express();
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL
+  connectionString: process.env.DATABASE_URL,
 });
 
 // Enable JSON parsing for the preferences update
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: false
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET, // Use SESSION_SECRET from environment variables
+    resave: false,
+    saveUninitialized: false,
+  }),
+);
 
 // Create users table
 pool.query(`
@@ -30,62 +31,61 @@ pool.query(`
   )
 `);
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   if (req.session.user) {
-    res.sendFile(path.join(__dirname, 'dashboard.html'));
+    res.sendFile(path.join(__dirname, "dashboard.html"));
   } else {
-    res.sendFile(path.join(__dirname, 'login.html'));
+    res.sendFile(path.join(__dirname, "login.html"));
   }
 });
 
-app.post('/register', async (req, res) => {
+app.post("/register", async (req, res) => {
   const { username, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
-  
+
   try {
-    await pool.query(
-      'INSERT INTO users (username, password) VALUES ($1, $2)',
-      [username, hashedPassword]
-    );
-    res.redirect('/');
+    await pool.query("INSERT INTO users (username, password) VALUES ($1, $2)", [
+      username,
+      hashedPassword,
+    ]);
+    res.redirect("/");
   } catch (err) {
-    res.status(400).send('Username already exists');
+    res.status(400).send("Username already exists");
   }
 });
 
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  
+
   try {
-    const result = await pool.query(
-      'SELECT * FROM users WHERE username = $1',
-      [username]
-    );
+    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
+      username,
+    ]);
     const user = result.rows[0];
-    
+
     if (user && bcrypt.compareSync(password, user.password)) {
       req.session.user = username;
-      res.redirect('/');
+      res.redirect("/");
     } else {
-      res.status(400).send('Invalid credentials');
+      res.status(400).send("Invalid credentials");
     }
   } catch (err) {
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 });
 
-app.get('/logout', (req, res) => {
+app.get("/logout", (req, res) => {
   req.session.destroy();
-  res.redirect('/');
+  res.redirect("/");
 });
 
-app.get('/db/users', async (req, res) => {
+app.get("/db/users", async (req, res) => {
   if (!req.session.user) {
-    return res.status(401).send('Unauthorized');
+    return res.status(401).send("Unauthorized");
   }
   try {
     const result = await pool.query(
-      'SELECT id, username, preferences FROM users'
+      "SELECT id, username, preferences FROM users",
     );
     res.json(result.rows);
   } catch (err) {
@@ -93,22 +93,23 @@ app.get('/db/users', async (req, res) => {
   }
 });
 
-app.post('/db/users/:id', async (req, res) => {
+app.post("/db/users/:id", async (req, res) => {
   if (!req.session.user) {
-    return res.status(401).send('Unauthorized');
+    return res.status(401).send("Unauthorized");
   }
   const { preferences } = req.body;
   try {
-    await pool.query(
-      'UPDATE users SET preferences = $1 WHERE id = $2',
-      [preferences, req.params.id]
-    );
-    res.send('Updated successfully');
+    await pool.query("UPDATE users SET preferences = $1 WHERE id = $2", [
+      preferences,
+      req.params.id,
+    ]);
+    res.send("Updated successfully");
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-app.listen(3000, '0.0.0.0', () => {
-  console.log('Server running on port 3000');
+// Bind the server to port 3000 on all interfaces
+app.listen(3000, "0.0.0.0", () => {
+  console.log("Server running on port 3000");
 });
