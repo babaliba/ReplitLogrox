@@ -4,15 +4,40 @@
 <head>
   <title>Dashboard</title>
   <style>
-    body { font-family: Arial; max-width: 500px; margin: 20px auto; padding: 20px; }
+    body { font-family: Arial; max-width: 800px; margin: 20px auto; padding: 20px; }
     .logout { float: right; }
+    .menu { margin: 20px 0; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
+    .menu button { padding: 10px 20px; margin-right: 10px; cursor: pointer; }
+    .menu button.active { background: #4CAF50; color: white; border: none; }
+    .section { display: none; }
+    .section.active { display: block; }
   </style>
 </head>
 <body>
   <h2>Welcome to your Dashboard</h2>
   <a href="/logout" class="logout">Logout</a>
-  <div id="users"></div>
+  
+  <div class="menu">
+    <button onclick="showSection('users')" class="active">Users</button>
+    <button onclick="showSection('datos')">Datos</button>
+  </div>
+
+  <div id="users" class="section active"></div>
+  <div id="datos" class="section">
+    <h3>Sección para editar los datos de la campaña</h3>
+  </div>
+
   <script>
+    function showSection(sectionId) {
+      // Hide all sections and deactivate all buttons
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
+      
+      // Show selected section and activate corresponding button
+      document.getElementById(sectionId).classList.add('active');
+      document.querySelector(`button[onclick="showSection('${sectionId}')"]`).classList.add('active');
+    }
+
     fetch('/db/users')
       .then(res => res.json())
       .then(users => {
