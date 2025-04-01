@@ -111,8 +111,8 @@ app.post("/db/users/:id", async (req, res) => {
   }
 });
 
-// Bind the server to port 3000 on all interfaces
-const port = process.env.PORT || 3000;
+// Bind the server to port 5000 on all interfaces
+const port = process.env.PORT || 5000;
 app.listen(port, "0.0.0.0", () => {
   console.log(`Server running on port ${port}`);
 });
