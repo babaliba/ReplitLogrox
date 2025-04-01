@@ -9,7 +9,7 @@ const app = express();
 app.use(express.static(path.join(__dirname)));
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL + "?sslmode=require",
+  connectionString: "postgresql://postgres:postgres@localhost:5432/postgres",
 });
 
 // Enable JSON parsing for the preferences update
