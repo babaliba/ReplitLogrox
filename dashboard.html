@@ -4,36 +4,127 @@
 <head>
   <title>Dashboard</title>
   <style>
-    body { font-family: Arial; max-width: 800px; margin: 20px auto; padding: 20px; }
-    .logout { float: right; }
-    .menu { margin: 20px 0; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
-    .menu button { padding: 10px 20px; margin-right: 10px; cursor: pointer; }
-    .menu button.active { background: #4CAF50; color: white; border: none; }
-    .section { display: none; }
-    .section.active { display: block; }
+    /* Global Styles */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f7;
+      color: #333;
+    }
+
+    /* Header */
+    .main-header {
+      background-color: #6a5acd;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* Main Content */
+    .content {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+    }
+
+    .logout {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      text-decoration: none;
+    }
+
+    .menu {
+      margin: 20px 0;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+
+    .menu button {
+      background-color: #6a5acd;
+      color: #fff;
+      font-size: 1em;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .menu button:hover {
+      background-color: #4B0082;
+      transform: scale(1.05);
+    }
+
+    .menu button.active {
+      background-color: #000080;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    #users div {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #6a5acd;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #4B0082;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
-  <h2>Welcome to your Dashboard</h2>
-  <a href="/logout" class="logout">Logout</a>
+  <header class="main-header">
+    <h1>Welcome to your Dashboard</h1>
+    <a href="/logout" class="logout">Logout</a>
+  </header>
   
-  <div class="menu">
-    <button onclick="showSection('users')" class="active">Users</button>
-    <button onclick="showSection('datos')">Datos</button>
-  </div>
+  <div class="content">
+    <div class="menu">
+      <button onclick="showSection('users')" class="active">Users</button>
+      <button onclick="showSection('datos')">Datos</button>
+    </div>
 
-  <div id="users" class="section active"></div>
-  <div id="datos" class="section">
-    <h3>Sección para editar los datos de la campaña</h3>
+    <div id="users" class="section active"></div>
+    <div id="datos" class="section">
+      <h3>Sección para editar los datos de la campaña</h3>
+    </div>
   </div>
 
   <script>
     function showSection(sectionId) {
-      // Hide all sections and deactivate all buttons
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
-      
-      // Show selected section and activate corresponding button
       document.getElementById(sectionId).classList.add('active');
       document.querySelector(`button[onclick="showSection('${sectionId}')"]`).classList.add('active');
     }
@@ -42,9 +133,9 @@
       .then(res => res.json())
       .then(users => {
         const usersHtml = users.map(user => `
-          <div style="margin: 10px 0; padding: 10px; border: 1px solid #ccc;">
+          <div>
             <p>Username: ${user.username}</p>
-            <textarea id="pref_${user.id}" style="width: 100%; margin: 5px 0;">${user.preferences || ''}</textarea>
+            <textarea id="pref_${user.id}">${user.preferences || ''}</textarea>
             <button onclick="updateUser(${user.id})">Update Preferences</button>
           </div>
         `).join('');
