@@ -7,7 +7,7 @@ const path = require("path");
 
 const app = express();
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL + "?sslmode=require",
 });
 
 // Enable JSON parsing for the preferences update
@@ -110,6 +110,7 @@ app.post("/db/users/:id", async (req, res) => {
 });
 
 // Bind the server to port 3000 on all interfaces
-app.listen(3000, "0.0.0.0", () => {
-  console.log("Server running on port 3000");
+const port = process.env.PORT || 3000;
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server running on port ${port}`);
 });
