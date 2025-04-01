@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const path = require("path");
 
 const app = express();
+app.use(express.static(path.join(__dirname)));
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL + "?sslmode=require",
 });
