@@ -28,6 +28,7 @@ pool.query(`
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE,
+    email TEXT UNIQUE,
     password TEXT,
     preferences TEXT
   )
@@ -42,17 +43,18 @@ app.get("/", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
 
   try {
-    await pool.query("INSERT INTO users (username, password) VALUES ($1, $2)", [
+    await pool.query("INSERT INTO users (username, email, password) VALUES ($1, $2, $3)", [
       username,
+      email,
       hashedPassword,
     ]);
     res.redirect("/");
   } catch (err) {
-    res.status(400).send("Username already exists");
+    res.status(400).send("Username or email already exists");
   }
 });
 
