@@ -105,13 +105,13 @@
 </head>
 <body>
   <header class="main-header">
-    <h1>Welcome to your Dashboard</h1>
-    <a href="/logout" class="logout">Logout</a>
+    <h1>Bienvenido a tu Panel de Control</h1>
+    <a href="/logout" class="logout">Cerrar Sesión</a>
   </header>
   
   <div class="content">
     <div class="menu">
-      <button onclick="showSection('users')" class="active">Users</button>
+      <button onclick="showSection('users')" class="active">Usuarios</button>
       <button onclick="showSection('datos')">Datos</button>
     </div>
 
@@ -134,9 +134,9 @@
       .then(users => {
         const usersHtml = users.map(user => `
           <div>
-            <p>Username: ${user.username}</p>
+            <p>Usuario: ${user.username}</p>
             <textarea id="pref_${user.id}">${user.preferences || ''}</textarea>
-            <button onclick="updateUser(${user.id})">Update Preferences</button>
+            <button onclick="updateUser(${user.id})">Actualizar Preferencias</button>
           </div>
         `).join('');
         document.getElementById('users').innerHTML = usersHtml;
@@ -148,7 +148,7 @@
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ preferences })
-      }).then(() => alert('Updated successfully'));
+      }).then(() => alert('Actualizado con éxito'));
     }
   </script>
 </body>

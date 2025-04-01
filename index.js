@@ -85,7 +85,7 @@ app.get("/logout", (req, res) => {
 
 app.get("/db/users", async (req, res) => {
   if (!req.session.user) {
-    return res.status(401).send("Unauthorized");
+    return res.status(401).send("No autorizado");
   }
   try {
     const result = await pool.query(
@@ -99,7 +99,7 @@ app.get("/db/users", async (req, res) => {
 
 app.post("/db/users/:id", async (req, res) => {
   if (!req.session.user) {
-    return res.status(401).send("Unauthorized");
+    return res.status(401).send("No autorizado");
   }
   const { preferences } = req.body;
   try {
