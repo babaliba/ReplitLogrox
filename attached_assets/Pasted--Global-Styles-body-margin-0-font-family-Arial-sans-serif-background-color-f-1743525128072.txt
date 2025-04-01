@@ -1,0 +1,133 @@
+/* Global Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f7; /* Un tono claro para el fondo */
+  color: #333;
+}
+
+/* Header */
+.main-header {
+  background-color: #6a5acd; /* SlateBlue */
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+.main-header h1 {
+  margin: 0;
+  font-size: 2em;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1.2em;
+  font-weight: 300;
+}
+
+/* Main Content */
+.content {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+/* Instructions Section */
+.instructions {
+  margin-bottom: 20px;
+}
+
+.instructions h2 {
+  color: #6a5acd; /* SlateBlue */
+  font-size: 1.5em;
+}
+
+/* Form */
+.evaluation-form .form-group {
+  margin-bottom: 20px;
+}
+
+.evaluation-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+/* Rating Group */
+.rating-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.rating-group input[type="radio"] {
+  display: none; /* Ocultar el botón de radio por defecto */
+}
+
+.rating-label {
+  font-size: 2em;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+/* Efecto hover para los labels */
+.rating-label:hover {
+  color: #4B0082; /* Indigo */
+  transform: scale(1.3);
+}
+
+/* Cuando un radio está seleccionado */
+.rating-group input[type="radio"]:checked + .rating-label {
+  color: #000080; /* Navy */
+  transform: scale(1.5);
+}
+
+/* Buttons */
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.btn-prev,
+.btn-next {
+  background-color: #6a5acd; /* SlateBlue */
+  color: #fff;
+  font-size: 1em;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-prev:hover,
+.btn-next:hover {
+  background-color: #4B0082; /* Indigo */
+  transform: scale(1.05);
+}
+
+.btn-prev:active,
+.btn-next:active {
+  background-color: #000080; /* Navy */
+  transform: scale(0.95);
+}
+
+/* Footer */
+.main-footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #e0e0eb;
+  color: #333;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}
+
+.main-footer p {
+  margin: 0;
+}
