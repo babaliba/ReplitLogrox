@@ -47,14 +47,23 @@ app.post("/register", async (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 8);
 
   try {
-    await pool.query("INSERT INTO users (username, email, password) VALUES ($1, $2, $3)", [
-      username,
-      email,
-      hashedPassword,
-    ]);
+    const result = await pool.query(
+      "SELECT * FROM users WHERE username = $1 OR email = $2",
+      [username, email]
+    );
+    
+    if (result.rows.length > 0) {
+      return res.status(400).send("El usuario o email ya existe");
+    }
+
+    await pool.query(
+      "INSERT INTO users (username, email, password) VALUES ($1, $2, $3)",
+      [username, email, hashedPassword]
+    );
     res.redirect("/");
   } catch (err) {
-    res.status(400).send("Username or email already exists");
+    console.error(err);
+    res.status(500).send("Error en el registro");
   }
 });
 
