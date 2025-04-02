@@ -131,3 +131,6 @@ dist
 
 # Replit debugger
 .breakpoints
+
+# For systemd service in ubuntu server
+*.service
