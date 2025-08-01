@@ -8,7 +8,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 
 const app = express();
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname), { index: false }));
 
 const ACCESS_CODE = process.env.ACCESS_CODE || "123456";
 
