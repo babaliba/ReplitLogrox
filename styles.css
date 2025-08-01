@@ -158,3 +158,20 @@ textarea {
 #empleadoForm .form-group {
   margin-bottom: 15px;
 }
+
+/* Survey rating styles */
+.rating-group {
+  display: flex;
+  justify-content: space-between;
+  max-width: 300px;
+  margin: 10px 0;
+}
+
+.rating-group input[type="radio"] {
+  display: none;
+}
+
+.rating-label {
+  font-size: 2rem;
+  cursor: pointer;
+}
