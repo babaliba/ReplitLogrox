@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require("express");
 const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
@@ -9,7 +11,7 @@ const app = express();
 app.use(express.static(path.join(__dirname)));
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL + "?sslmode=require",
+  connectionString: process.env.DATABASE_URL,
 });
 
 // Enable JSON parsing for the preferences update
