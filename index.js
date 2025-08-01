@@ -10,6 +10,8 @@ const path = require("path");
 const app = express();
 app.use(express.static(path.join(__dirname)));
 
+const ACCESS_CODE = process.env.ACCESS_CODE || "123456";
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
@@ -37,10 +39,37 @@ pool.query(`
 `);
 
 app.get("/", (req, res) => {
+  if (!req.session.prelogin) {
+    return res.sendFile(path.join(__dirname, "welcome.html"));
+  }
   if (req.session.user) {
     res.sendFile(path.join(__dirname, "dashboard.html"));
   } else {
     res.sendFile(path.join(__dirname, "login.html"));
+  }
+});
+
+app.get("/login", (req, res) => {
+  if (req.session.user) {
+    return res.redirect("/");
+  }
+  res.sendFile(path.join(__dirname, "login.html"));
+});
+
+app.get("/survey", (req, res) => {
+  if (!req.session.prelogin) {
+    return res.redirect("/");
+  }
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.post("/verify-code", (req, res) => {
+  const { code } = req.body;
+  if (code === ACCESS_CODE) {
+    req.session.prelogin = true;
+    res.redirect("/survey");
+  } else {
+    res.status(401).send("Código incorrecto");
   }
 });
 
@@ -119,6 +148,20 @@ app.post("/db/users/:id", async (req, res) => {
       req.params.id,
     ]);
     res.send("Updated successfully");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.get("/public/empleados", async (req, res) => {
+  if (!req.session.prelogin) {
+    return res.status(401).send("No autorizado");
+  }
+  try {
+    const result = await pool.query(
+      "SELECT id, nombre, apellidos FROM empleados ORDER BY id"
+    );
+    res.json(result.rows);
   } catch (err) {
     res.status(500).send(err.message);
   }
