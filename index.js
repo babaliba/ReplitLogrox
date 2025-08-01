@@ -39,14 +39,10 @@ pool.query(`
 `);
 
 app.get("/", (req, res) => {
-  if (!req.session.prelogin) {
-    return res.sendFile(path.join(__dirname, "welcome.html"));
-  }
   if (req.session.user) {
-    res.sendFile(path.join(__dirname, "dashboard.html"));
-  } else {
-    res.sendFile(path.join(__dirname, "login.html"));
+    return res.sendFile(path.join(__dirname, "dashboard.html"));
   }
+  res.sendFile(path.join(__dirname, "welcome.html"));
 });
 
 app.get("/login", (req, res) => {

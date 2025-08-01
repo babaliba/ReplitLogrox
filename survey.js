@@ -25,7 +25,7 @@ document.querySelector('.btn-next').addEventListener('click', () => {
     currentIndex++;
     showEmployee(currentIndex);
   } else {
-    window.location.href = '/login';
+    window.location.href = '/';
   }
 });
 
