@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenido</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="main-header">
+    <h1>Logrox</h1>
+    <p class="subtitle">Introduce el código de acceso para continuar</p>
+  </header>
+
+  <main class="content">
+    <form action="/verify-code" method="POST">
+      <div class="form-group">
+        <label>Código de 6 dígitos:</label>
+        <input type="password" name="code" pattern="\d{6}" required>
+      </div>
+      <button type="submit">Entrar</button>
+    </form>
+  </main>
+</body>
+</html>

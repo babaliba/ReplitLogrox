@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logrox - Prototipo 3</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="main-header">
+    <h1>Logrox</h1>
+    <p class="subtitle">Por favor, evalúa a cada miembro en tareas específicas</p>
+  </header>
+
+  <main class="content">
+    <section class="instructions">
+      <h2>Instrucciones</h2>
+      <p>
+        Por favor, evalúa a <span id="employee-name">Empleado</span> según los criterios indicados abajo. Selecciona el emoji que mejor representa tu evaluación.
+      </p>
+    </section>
+
+    <form class="evaluation-form">
+      <div class="form-group">
+        <label for="task1">Evalúa a <span id="employee-label">Empleado</span></label>
+        <div class="rating-group">
+          <input type="radio" id="rating-1" name="task1" value="1">
+          <label for="rating-1" class="rating-label">😡</label>
+
+          <input type="radio" id="rating-2" name="task1" value="2">
+          <label for="rating-2" class="rating-label">☹️</label>
+
+          <input type="radio" id="rating-3" name="task1" value="3">
+          <label for="rating-3" class="rating-label">😐</label>
+
+          <input type="radio" id="rating-4" name="task1" value="4">
+          <label for="rating-4" class="rating-label">😊</label>
+
+          <input type="radio" id="rating-5" name="task1" value="5">
+          <label for="rating-5" class="rating-label">🤩</label>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button type="button" class="btn-prev">Anterior</button>
+        <button type="button" class="btn-next">Siguiente</button>
+      </div>
+    </form>
+  </main>
+
+  <footer class="main-footer">
+    <p>&copy; 2024 Logrox</p>
+  </footer>
+  <script src="survey.js"></script>
+</body>
+</html>
